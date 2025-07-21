@@ -1,7 +1,5 @@
-const movieImageFormDOM = document.forms[0];
-const imageDOM = document.getElementById('img');
-
-const movieDetailsFormDOM = document.forms[1];
+const formDOM = document.forms[0];
+const originalUrlDOM = document.getElementById('original_url');
 const titleDOM = document.getElementById('title');
 const urlDOM = document.getElementById('url');
 const descriptionDOM = document.getElementById('description');
@@ -13,27 +11,8 @@ const ratingDOM = document.getElementById('rating');
 const statusPublishedDOM = document.getElementById('status_published');
 const statusDraftDOM = document.getElementById('status_draft');
 
-if (movieImageFormDOM) {
-    imageDOM.addEventListener('change', () => {
-        console.log(imageDOM.value);
-
-        fetch('/api/admin/upload-image', {
-            method: 'POST',
-            headers: {
-                // 'Content-Type': 'application/json',
-            },
-            // body: JSON.stringify(data),
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(console.error);
-    });
-}
-
-if (movieDetailsFormDOM) {
-    movieDetailsFormDOM.addEventListener('submit', (e) => {
+if (formDOM) {
+    formDOM.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const data = {
@@ -76,8 +55,8 @@ if (movieDetailsFormDOM) {
             data.status = 'draft';
         }
 
-        fetch('/api/admin/movies', {
-            method: 'POST',
+        fetch('/api/admin/movies/' + originalUrlDOM.value, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -85,7 +64,9 @@ if (movieDetailsFormDOM) {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
+                if (data.status === 'success' && data.action === 'redirect') {
+                    location.href = data.href;
+                }
             })
             .catch(console.error);
     })
